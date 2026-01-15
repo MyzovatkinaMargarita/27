@@ -20,10 +20,12 @@ const Stack = styled.div`
   display: grid; gap: 14px;
 `;
 export default function TestRunPage() {
+  // useParams -> testId: число из маршрута /student/test/:id
   const { id } = useParams();
   const testId = Number(id);
 
   const [all, setAll] = useState<Question[]>([]);
+  // state: "loading" | "ready" | "error" — явные состояния UX
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState("");
 
@@ -41,9 +43,72 @@ export default function TestRunPage() {
       });
   }, []);
 
+   // useMemo: фильтрация по testId один раз на изменения исходного массива
    const questions = useMemo(
     () => all.filter(q => q.testId === testId),
     [all, testId]
   );
+
+if (Number.isNaN(testId)) {
+    return (
+      <section>
+        <StudentHeader title="Тестирование" backTo="/student/tests" />
+        <p>Неверный идентификатор теста.</p>
+      </section>
+    );
+  }
+
+  if (state === "loading") {
+    return (
+      <section>
+        <StudentHeader title={XXXINLINECODEXXX3XXXINLINECODEXXX} backTo="/student/tests" />
+        <p>Загрузка вопросов…</p>
+      </section>
+    );
+  }
+
+  if (state === "error") {
+    return (
+      <section>
+        <StudentHeader title={XXXINLINECODEXXX4XXXINLINECODEXXX} backTo="/student/tests" />
+        <p style={{ color: "crimson" }}>{error}</p>
+      </section>
+    );
+  }
+
+  return (
+    <>
+      <StudentHeader title={XXXINLINECODEXXX5XXXINLINECODEXXX} backTo="/student/tests" />
+      <Layout>
+        <Stack>
+          {questions.map((q, i) => (
+      // QuestionBlock: пока заглушка; позже подставим рендер по типу single/multiple/text
+            <QuestionBlock key={q.id} index={i} question={q} />
+          ))}
+
+          {/* кнопка "Отправить" — пока без логики */}
+          <div style={{ marginTop: 8 }}>
+            <button
+              style={{
+                padding: "12px 18px",
+                borderRadius: 10,
+                border: "none",
+                background: "linear-gradient(180deg, #4f8cff, #3675f4)",
+                color: "#fff",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Отправить
+            </button>
+          </div>
+        </Stack>
+        
+        {/* правый бокс-таймер — заглушка */}
+        <TimerBox>00:59</TimerBox>
+      </Layout>
+    </>
+  );
+}
 
 
